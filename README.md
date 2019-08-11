@@ -25,3 +25,5 @@ qemu-system-i386 boot.bin
 Após gravar no pendrive, teoricamente você só precisa reiniciar o seu PC e configurar sua BIOS para fazer o boot pelo seu pendrive.
 Só não dou mais detalhes porque cada PC é de um jeito. No meu tive desativar algumas configurações de segurança. Talvez no seu não precise.
 
+# Agradecimentos
+Esse bootloader foi feito graças ao estudo do projeto [Neutrino OS](https://github.com/AlissonLinhares/NeutrinoOS)
