@@ -1,8 +1,14 @@
-Hello World Bootloader
+# Hello World Bootloader
 
 ## Pré requisitos
+
+```
+
 sudo apt install nasm
+
 sudo apt install qemu-system-x86
+
+```
 
 ## Compilação
 nasm boot.asm -f bin -o boot.bin
@@ -19,5 +25,3 @@ qemu-system-i386 boot.bin
 Após gravar no pendrive, teoricamente você só precisa reiniciar o seu PC e configurar sua BIOS para fazer o boot pelo seu pendrive.
 Só não dou mais detalhes porque cada PC é de um jeito. No meu tive desativar algumas configurações de segurança. Talvez no seu não precise.
 
-
-sudo dd if=boot.bin of=/dev/sdb bs=512 count=1 conv=notrunc

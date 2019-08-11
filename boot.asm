@@ -1,52 +1,55 @@
+; Bootloader de exemplo feito graças ao estudo do projeto Neutrino OS (https://github.com/AlissonLinhares/NeutrinoOS)
+[ORG 7C00h]
 [BITS 16]
-[ORG 0x7C00]
+
+JMP 0:main
+TIMES 49 - ($-$$) DB 0
 
 main:
 
-    ; zero the data segment.
-    mov ax,0x0000
-    mov ds,ax
+	XOR AX,AX
+	MOV DS,AX
+	MOV ES,AX
+	MOV FS,AX
+	MOV GS,AX
+	MOV SS,AX
+	MOV SP,7C00h
 
-    mov si, Start
-    call PutStr
+	MOV BX,msg
+	CALL print
+	JMP $
 
-    mov cx, 18h
-    call timer
+	print:
+		PUSH AX
+		PUSH BX
 
-    mov si, keybord
-    call PutStr
+		MOV AH,0Eh
+		MOV AL,BYTE[BX]
 
-jmp $
+		.nextChar:
+			INT 10h
+			INC BX
+			MOV AL,BYTE[BX]
+		TEST AL,AL
+		JNZ .nextChar
 
-; Procedures
+		POP BX
+		POP AX
+		RET
 
-PutStr:        ; Procedure label/start
-    mov ah,0x0E    ; The function to display a character (teletype)
-    mov bh,0x00    ; Page number
-    mov bl,0x07    ; Normal text attribute
+msg DB 13,10,'Eai mundo!',13,10,'Por: Aleph Santos Oliveira (18710509)',0
 
-    nextchar:
-    lodsb
-    or al,al
-    jz return
-
-    int 0x10
-    jmp nextchar
-    return:
-    ret
-
-timer: ;bit more than a second
-    mov ah, 86h
-    mov dx, 0000h
-    int 15h
-    ret
-
-
-Start db 'BOOTLOADER',13,10,13,10,13,10,'E ai mundo!',0
-keybord db 13,10,'Aleph Santos Oliveira - 18710509',13,10,13,10,'PUC Campinas - Sistemas de Informacao',13,10,0
-
-
-; End Matter
-times 510-($-$$) db 0    ; Fill the rest with zeros
-dw 0xAA55        ; Boot loader signature
+;Esse registro de boot define as partições nos disco, alguns computadores só conseguem dar boot em HDs e USB-Drives com esses registros ativados. 
+alignment           TIMES 446-($-$$) DB
+bootIndicator       DB 80h ;80 = botável, 0 = não botável
+startHeadNumber     DB 0   ;CHS - 0,0,1
+startCylinderNumber DW 0100h
+descriptor          DB 0Bh ;FAT 32 - Se colocar 0 ocorre erro em alguns PCs...
+lastHeadNumber      DB 16
+lastCylinderNumber  DW 03FCFh
+startingSector      DD 1
+partitionSize       DD 207 * 16 * 63
+reserved            TIMES 510 - ($-$$) DB 0 ;Alinhando dados do kernel.
+bootSignature       DW 0AA55h
+kernelAlignment     TIMES 1536 DB 0
 
